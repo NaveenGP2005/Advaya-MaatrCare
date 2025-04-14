@@ -22,6 +22,7 @@ app.use(
     origin: [
       "https://advaya-maatrcare-front.onrender.com",
       "http://localhost:5173",
+      "https://advaya-maatrcare-node.onrender.com"
     ], // Your frontend URL
 
     credentials: true,
@@ -166,14 +167,17 @@ app.post("/appointments", async (req, res) => {
           return;
         }
 
-        const aiResponse = await axios.post(
-          "http://localhost:5000/generate-email",
-          {
-            userName: user.name,
-            doctorName: doctor.name,
-            time,
-          }
-        );
+        // Create a default email template since Python service is not deployed
+        const emailMessage = `
+Dear ${user.name},
+
+This is a reminder for your upcoming appointment with Dr. ${doctor.name} at ${time}.
+
+Please arrive 10 minutes before your scheduled time. If you need to reschedule, please contact us as soon as possible.
+
+Best regards,
+Decentra Solve Medical Team
+        `;
 
         const transporter = nodemailer.createTransport({
           service: "gmail",
@@ -187,7 +191,7 @@ app.post("/appointments", async (req, res) => {
           from: process.env.EMAIL_USER,
           to: email,
           subject: "Appointment Reminder",
-          text: aiResponse.data.message,
+          text: emailMessage,
         });
 
         console.log(`📧 Reminder sent to ${user.email} for Dr. ${doctor.name}`);
@@ -342,7 +346,7 @@ app.post("/analyze", upload.single("file"), async (req, res) => {
   form.append("file", fs.createReadStream(file.path), file.originalname);
 
   try {
-    const response = await axios.post("http://localhost:5000/analyze", form, {
+    const response = await axios.post("https://advaya-maatrcare-node.onrender.com/analyze", form, {
       headers: form.getHeaders(),
     });
 

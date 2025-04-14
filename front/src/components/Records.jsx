@@ -75,7 +75,7 @@ const FileUpload = () => {
   const fetchAccessRequests = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/patient/access-requests', {
+      const response = await fetch('https://advaya-maatrcare-node.onrender.com/patient/access-requests', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -189,7 +189,7 @@ const FileUpload = () => {
 
       // Register file in backend
       const token = localStorage.getItem('token');
-      await fetch('http://localhost:5000/patient/register-file', {
+      await fetch('https://advaya-maatrcare-node.onrender.com/patient/register-file', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -376,7 +376,7 @@ const FileUpload = () => {
 
         // Send approval with encrypted keys
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:5000/patient/access-requests/${requestId}/respond`, {
+        const response = await fetch(`https://advaya-maatrcare-node.onrender.com/patient/access-requests/${requestId}/respond`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -437,7 +437,7 @@ const FileUpload = () => {
       } else {
         // Handle rejection
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:5000/patient/access-requests/${requestId}/respond`, {
+        const response = await fetch(`https://advaya-maatrcare-node.onrender.com/patient/access-requests/${requestId}/respond`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

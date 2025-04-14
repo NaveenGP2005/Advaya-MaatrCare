@@ -6,6 +6,7 @@ const Doctor = require('../models/doctor');
 const AccessRequest = require('../models/accessRequest');
 const FileAccess = require('../models/fileAccess');
 const User = require('../models/user');
+const mongoose = require('mongoose');
 
 // Public routes (no auth required)
 // Doctor registration
@@ -121,8 +122,13 @@ router.use(authenticateDoctor);
 // Request access to patient file
 router.post('/request-access', async (req, res) => {
     try {
-        const { patientId, message, fileId } = req.body; // fileId is now optional
+        const { patientId, message, fileId } = req.body;
         const doctorId = req.user.id;
+
+        // Validate patientId
+        if (!patientId || !mongoose.Types.ObjectId.isValid(patientId)) {
+            return res.status(400).json({ message: 'Invalid patient ID format' });
+        }
 
         // Check if patient exists
         const patient = await User.findById(patientId);
@@ -144,8 +150,8 @@ router.post('/request-access', async (req, res) => {
         const request = new AccessRequest({
             doctorId,
             patientId,
-            message,
-            fileId, // This is now optional
+            message: message || 'Requesting access to medical records',
+            fileId: fileId || null, // Handle optional fileId
             status: 'pending'
         });
 

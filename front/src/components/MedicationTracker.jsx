@@ -13,7 +13,7 @@ export default function MedicationTracker() {
   const fetchMeds = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/medications');
+      const res = await axios.get('https://advaya-maatrcare-node.onrender.com/medications');
       setMeds(res.data);
     } catch (error) {
       console.error('Error fetching medications:', error);
@@ -24,7 +24,7 @@ export default function MedicationTracker() {
 
   const deleteMed = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/medications/${id}`);
+      await axios.delete(`https://advaya-maatrcare-node.onrender.com/medications/${id}`);
       fetchMeds();
     } catch (error) {
       console.error('Error deleting medication:', error);
@@ -35,7 +35,7 @@ export default function MedicationTracker() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await axios.post('http://localhost:5000/medications', form);
+      await axios.post('https://advaya-maatrcare-node.onrender.com/medications', form);
       setForm({ name: '', dosage: '', time: '' });
       fetchMeds();
     } catch (error) {
@@ -47,7 +47,7 @@ export default function MedicationTracker() {
 
   const markAsTaken = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/medications/${id}/take`);
+      await axios.patch(`https://advaya-maatrcare-node.onrender.com/medications/${id}/take`);
       fetchMeds();
     } catch (error) {
       console.error('Error marking medication as taken:', error);
@@ -70,7 +70,7 @@ export default function MedicationTracker() {
 
   const fetchMedsAndNotify = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/medications');
+      const res = await axios.get('https://advaya-maatrcare-node.onrender.com/medications');
       const now = new Date();
       const currentTime = now.toTimeString().slice(0, 5);
       const medsList = res.data;

@@ -17,7 +17,7 @@ export default function ManageAccess() {
     const fetchRequests = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:5000/patient/access-requests', {
+            const response = await fetch('https://advaya-maatrcare-node.onrender.com/patient/access-requests', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -38,7 +38,7 @@ export default function ManageAccess() {
         try {
             const token = localStorage.getItem('token');
             console.log('Fetching patient files...');
-            const response = await fetch('http://localhost:5000/patient/files', {
+            const response = await fetch('https://advaya-maatrcare-node.onrender.com/patient/files', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -159,7 +159,7 @@ export default function ManageAccess() {
                 console.log('All encrypted keys:', encryptedKeys);
 
                 // Send approval with encrypted keys
-                const response = await fetch(`http://localhost:5000/patient/access-requests/${requestId}/respond`, {
+                const response = await fetch(`https://advaya-maatrcare-node.onrender.com/patient/access-requests/${requestId}/respond`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -177,7 +177,7 @@ export default function ManageAccess() {
                 }
             } else {
                 // Send rejection
-                const response = await fetch(`http://localhost:5000/patient/access-requests/${requestId}/respond`, {
+                const response = await fetch(`https://advaya-maatrcare-node.onrender.com/patient/access-requests/${requestId}/respond`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

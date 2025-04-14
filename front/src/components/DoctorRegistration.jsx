@@ -32,7 +32,7 @@ export default function DoctorRegistration() {
             localStorage.setItem('doctorPrivateKey', keyPair.privateKey);
 
             // Register doctor with public key
-            const response = await fetch('http://localhost:5000/doctor/register', {
+            const response = await fetch('https://advaya-maatrcare-node.onrender.com/doctor/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

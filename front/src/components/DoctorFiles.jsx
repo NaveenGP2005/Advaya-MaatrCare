@@ -24,7 +24,7 @@ export default function DoctorFiles() {
     const fetchApprovedFiles = async () => {
         try {
             const token = localStorage.getItem('doctorToken');
-            const response = await fetch('http://localhost:5000/doctor/access-keys', {
+            const response = await fetch('https://advaya-maatrcare-node.onrender.com/doctor/access-keys', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

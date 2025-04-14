@@ -36,12 +36,13 @@ const DoctorLogin = () => {
         throw new Error('Invalid response from server');
       }
 
-      // Store doctor's credentials
+      // Store doctor's credentials with proper role
       localStorage.setItem('doctorToken', token);
       localStorage.setItem('doctorId', doctor.id);
       localStorage.setItem('doctorName', doctor.name);
       localStorage.setItem('doctorEmail', doctor.email);
       localStorage.setItem('userType', 'doctor');
+      localStorage.setItem('role', 'doctor');
       
       // Generate or retrieve RSA key pair
       const keyPair = await generateRSAKeyPair();

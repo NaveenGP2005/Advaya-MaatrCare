@@ -70,6 +70,12 @@ const DoctorDashboard = () => {
   const requestAccess = async (patientId) => {
     try {
       const token = localStorage.getItem('doctorToken');
+      
+      // Validate patientId
+      if (!patientId) {
+        throw new Error('Invalid patient ID');
+      }
+
       const response = await fetch('https://advaya-maatrcare-node.onrender.com/doctor/request-access', {
         method: 'POST',
         headers: {
@@ -77,8 +83,9 @@ const DoctorDashboard = () => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ 
-          patientId,
-          message: 'Requesting access to medical records'
+          patientId: patientId.toString(), // Ensure patientId is a string
+          message: 'Requesting access to medical records',
+          fileId: null // Add optional fileId parameter
         })
       });
 
