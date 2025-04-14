@@ -1,62 +1,65 @@
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import BackButton from './BackButton';
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import BackButton from "./BackButton";
 
 export default function Appointments() {
   const [doctors, setDoctors] = useState([]);
-  const [userId, setUserId] = useState('67fb78734d906ccfbec0fc25');  // Assuming userId is either stored or retrieved from context/session
-  const [doctorId, setDoctorId] = useState('');
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
+  const [userId, setUserId] = useState("67fb78734d906ccfbec0fc25"); // Assuming userId is either stored or retrieved from context/session
+  const [doctorId, setDoctorId] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   useEffect(() => {
     // Fetch the list of doctors from the backend
-    fetch('http://localhost:5000/doctors')
-      .then(res => res.json())
-      .then(data => setDoctors(data))
-      .catch(err => console.error('Error fetching doctors:', err));
+    fetch("https://advaya-maatrcare-node.onrender.com/doctors")
+      .then((res) => res.json())
+      .then((data) => setDoctors(data))
+      .catch((err) => console.error("Error fetching doctors:", err));
   }, []);
 
   const bookAppointment = async () => {
     // Validate if userId, doctorId, date, and time are filled
-    const email=localStorage.getItem('email');
+    const email = localStorage.getItem("email");
     if (!userId || !doctorId || !date || !time) {
-      alert('Please fill all fields.');
+      alert("Please fill all fields.");
       return;
     }
 
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/appointments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`  // Add the token here
-        },
-        body: JSON.stringify({
-          userId,     // Make sure userId is not empty
-          doctorId,
-          time,
-          date,
-         email
-        }),
-      });
+      const response = await fetch(
+        "https://advaya-maatrcare-node.onrender.com/appointments",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Add the token here
+          },
+          body: JSON.stringify({
+            userId, // Make sure userId is not empty
+            doctorId,
+            time,
+            date,
+            email,
+          }),
+        }
+      );
 
       if (response.ok) {
         setIsSuccess(true);
         setTimeout(() => {
           setIsSuccess(false);
-          setDoctorId('');
-          setDate('');
-          setTime('');
+          setDoctorId("");
+          setDate("");
+          setTime("");
         }, 3000);
       } else {
-        throw new Error('Failed to book appointment');
+        throw new Error("Failed to book appointment");
       }
     } catch (error) {
-      alert('Error booking appointment.');
+      alert("Error booking appointment.");
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -70,9 +73,9 @@ export default function Appointments() {
       opacity: 1,
       transition: {
         when: "beforeChildren",
-        staggerChildren: 0.2
-      }
-    }
+        staggerChildren: 0.2,
+      },
+    },
   };
 
   const itemVariants = {
@@ -83,9 +86,9 @@ export default function Appointments() {
       transition: {
         type: "spring",
         stiffness: 100,
-        damping: 12
-      }
-    }
+        damping: 12,
+      },
+    },
   };
 
   const buttonVariants = {
@@ -95,8 +98,8 @@ export default function Appointments() {
       transition: {
         type: "spring",
         stiffness: 400,
-        damping: 10
-      }
+        damping: 10,
+      },
     },
     tap: { scale: 0.95 },
     loading: {
@@ -104,9 +107,9 @@ export default function Appointments() {
       transition: {
         duration: 0.8,
         repeat: Infinity,
-        repeatType: "reverse"
-      }
-    }
+        repeatType: "reverse",
+      },
+    },
   };
 
   const successVariants = {
@@ -117,14 +120,14 @@ export default function Appointments() {
       transition: {
         type: "spring",
         stiffness: 200,
-        damping: 15
-      }
+        damping: 15,
+      },
     },
     exit: {
       opacity: 0,
       scale: 0.8,
-      transition: { duration: 0.3 }
-    }
+      transition: { duration: 0.3 },
+    },
   };
 
   const inputVariants = {
@@ -134,9 +137,9 @@ export default function Appointments() {
       transition: {
         type: "spring",
         stiffness: 300,
-        damping: 10
-      }
-    }
+        damping: 10,
+      },
+    },
   };
 
   return (
@@ -157,7 +160,7 @@ export default function Appointments() {
           transition={{
             type: "spring",
             stiffness: 100,
-            damping: 15
+            damping: 15,
           }}
           whileHover={{ boxShadow: "0px 10px 25px rgba(0, 0, 0, 0.1)" }}
         >
@@ -169,8 +172,8 @@ export default function Appointments() {
               transition: {
                 duration: 5,
                 repeat: Infinity,
-                repeatType: "reverse"
-              }
+                repeatType: "reverse",
+              },
             }}
           >
             <motion.h1
@@ -190,7 +193,9 @@ export default function Appointments() {
             animate="visible"
           >
             <motion.div className="space-y-2" variants={itemVariants}>
-              <label className="block text-sm font-medium text-pink-700">Select Doctor</label>
+              <label className="block text-sm font-medium text-pink-700">
+                Select Doctor
+              </label>
               <motion.select
                 className="w-full p-3 border border-pink-200 rounded-lg focus:ring-pink-500 focus:border-pink-500"
                 value={doctorId}
@@ -200,7 +205,7 @@ export default function Appointments() {
                 whileHover={{ scale: 1.01 }}
               >
                 <option value="">Choose a Doctor</option>
-                {doctors.map(doc => (
+                {doctors.map((doc) => (
                   <option key={doc._id} value={doc._id}>
                     {doc.name} - {doc.specialization}
                   </option>
@@ -209,7 +214,9 @@ export default function Appointments() {
             </motion.div>
 
             <motion.div className="space-y-2" variants={itemVariants}>
-              <label className="block text-sm font-medium text-pink-700">Appointment Date</label>
+              <label className="block text-sm font-medium text-pink-700">
+                Appointment Date
+              </label>
               <motion.input
                 type="date"
                 className="w-full p-3 border border-pink-200 rounded-lg focus:ring-pink-500 focus:border-pink-500"
@@ -222,7 +229,9 @@ export default function Appointments() {
             </motion.div>
 
             <motion.div className="space-y-2" variants={itemVariants}>
-              <label className="block text-sm font-medium text-pink-700">Appointment Time</label>
+              <label className="block text-sm font-medium text-pink-700">
+                Appointment Time
+              </label>
               <motion.input
                 type="time"
                 className="w-full p-3 border border-pink-200 rounded-lg focus:ring-pink-500 focus:border-pink-500"
@@ -249,9 +258,25 @@ export default function Appointments() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   Booking...
                 </motion.span>
@@ -272,10 +297,26 @@ export default function Appointments() {
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.1 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 15,
+                      delay: 0.1,
+                    }}
                   >
-                    <svg className="w-6 h-6 mx-auto text-green-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                    <svg
+                      className="w-6 h-6 mx-auto text-green-500 mb-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M5 13l4 4L19 7"
+                      ></path>
                     </svg>
                   </motion.div>
                   Appointment booked successfully!
