@@ -22,7 +22,7 @@ const DoctorDashboard = () => {
       const token = localStorage.getItem('doctorToken');
       
       // Fetch access requests
-      const requestsResponse = await fetch('http://localhost:5000/doctor/requests', {
+      const requestsResponse = await fetch('https://advaya-maatrcare-node.onrender.com/doctor/requests', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -37,7 +37,7 @@ const DoctorDashboard = () => {
       setAccessRequests(requestsData);
       
       // Fetch patients
-      const patientsResponse = await fetch('http://localhost:5000/doctor/patients', {
+      const patientsResponse = await fetch('https://advaya-maatrcare-node.onrender.com/doctor/patients', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -70,7 +70,7 @@ const DoctorDashboard = () => {
   const requestAccess = async (patientId) => {
     try {
       const token = localStorage.getItem('doctorToken');
-      const response = await fetch('http://localhost:5000/doctor/request-access', {
+      const response = await fetch('https://advaya-maatrcare-node.onrender.com/doctor/request-access', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

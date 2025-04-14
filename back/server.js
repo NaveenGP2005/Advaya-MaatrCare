@@ -19,7 +19,7 @@ const Doctor = require("./models/doctor");
 
 // Middleware
 app.use(cors({
-    origin: 'http://localhost:5173', // Your frontend URL
+    origin: 'https://advaya-maatrcare-front.onrender.com', // Your frontend URL
     credentials: true
 }));
 app.use(bodyParser.json());

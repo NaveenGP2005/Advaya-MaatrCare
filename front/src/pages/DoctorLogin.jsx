@@ -17,7 +17,7 @@ const DoctorLogin = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/doctor/login', {
+      const response = await fetch('https://advaya-maatrcare-node.onrender.com/doctor/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ const DoctorLogin = () => {
       localStorage.setItem('doctorPrivateKey', keyPair.privateKey);
       
       // Update doctor's public key in the backend
-      const updateResponse = await fetch(`http://localhost:5000/doctor/update-key`, {
+      const updateResponse = await fetch(`https://advaya-maatrcare-node.onrender.com/doctor/update-key`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
