@@ -1,14 +1,14 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
+require("dotenv").config();
+const express = require("express");
+const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
 const bodyParser = require("body-parser");
-const cors = require('cors');
+const cors = require("cors");
 const axios = require("axios");
 const fs = require("fs");
 const FormData = require("form-data");
 const multer = require("multer");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 const app = express();
 const PORT = process.env.PORT || 5000;
 const userRouter = require("./routers/userroute");
@@ -16,29 +16,34 @@ const anyRouter = require("./routers/anyrouter");
 const User = require("./models/user");
 const Doctor = require("./models/doctor");
 
-
 // Middleware
-app.use(cors({
-    origin: 'https://advaya-maatrcare-front.onrender.com', // Your frontend URL
-    credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      "https://advaya-maatrcare-front.onrender.com",
+      "http://localhost:5173",
+    ], // Your frontend URL
+
+    credentials: true,
+  })
+);
 app.use(bodyParser.json());
 app.use(express.json());
 
 // Auth middleware
 const authMiddleware = async (req, res, next) => {
-    try {
-        const token = req.headers.authorization?.split(' ')[1];
-        if (!token) {
-            return res.status(401).json({ message: 'No token provided' });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch (error) {
-        res.status(401).json({ message: 'Invalid token' });
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
     }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: "Invalid token" });
+  }
 };
 
 // MongoDB Connections
@@ -46,70 +51,72 @@ app.use("/user", userRouter);
 app.use("/home", anyRouter);
 
 // Routes
-const doctorRoutes = require('./routers/doctorRoutes');
-const patientRoutes = require('./routers/patientRoutes');
+const doctorRoutes = require("./routers/doctorRoutes");
+const patientRoutes = require("./routers/patientRoutes");
 
 // Use routes
-app.use('/doctor', doctorRoutes);
-app.use('/patient', patientRoutes);
+app.use("/doctor", doctorRoutes);
+app.use("/patient", patientRoutes);
 
 // Additional endpoint for patient search (used by doctors)
-app.get('/api/doctor/search-patients', authMiddleware, async (req, res) => {
-    try {
-        const { email } = req.query;
-        const patients = await User.find({
-            email: { $regex: email, $options: 'i' }
-        }).select('name email');
-        
-        res.json(patients);
-    } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
+app.get("/api/doctor/search-patients", authMiddleware, async (req, res) => {
+  try {
+    const { email } = req.query;
+    const patients = await User.find({
+      email: { $regex: email, $options: "i" },
+    }).select("name email");
+
+    res.json(patients);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 });
 
 // Additional endpoint for patient files (used by doctors)
-app.get('/api/doctor/patient-files/:patientId', authMiddleware, async (req, res) => {
+app.get(
+  "/api/doctor/patient-files/:patientId",
+  authMiddleware,
+  async (req, res) => {
     try {
-        const { patientId } = req.params;
-        const FileAccess = require('./models/fileAccess');
-        const files = await FileAccess.find({ patientId });
-        res.json(files);
+      const { patientId } = req.params;
+      const FileAccess = require("./models/fileAccess");
+      const files = await FileAccess.find({ patientId });
+      res.json(files);
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+      res.status(500).json({ message: "Server error", error: error.message });
     }
-});
+  }
+);
 
 // Schemas and Models
- 
 
 const appointmentSchema = new mongoose.Schema({
-    userId: String,
-    doctorId: String,
-    date: String,
-    time: String,
+  userId: String,
+  doctorId: String,
+  date: String,
+  time: String,
 });
 
 const medSchema = new mongoose.Schema({
-    name: String,
-    dosage: String,
-    time: String,
-    taken: { type: Boolean, default: false },
+  name: String,
+  dosage: String,
+  time: String,
+  taken: { type: Boolean, default: false },
 });
 
 const fileSchema = new mongoose.Schema({
-    cid: { type: String, required: true, unique: true },
-    fileName: String,
-    aesKey: String,
-    iv: String,
-    patientId: String,
-    allowedDoctors: [String],
-    uploadedAt: { type: Date, default: Date.now }
+  cid: { type: String, required: true, unique: true },
+  fileName: String,
+  aesKey: String,
+  iv: String,
+  patientId: String,
+  allowedDoctors: [String],
+  uploadedAt: { type: Date, default: Date.now },
 });
-
 
 const Appointment = mongoose.model("Appointment", appointmentSchema);
 const Medication = mongoose.model("Medication", medSchema);
-const File = mongoose.model('File', fileSchema);
+const File = mongoose.model("File", fileSchema);
 
 // Routes
 // Doctors
@@ -126,14 +133,17 @@ app.get("/doctors", async (req, res) => {
 // Appointments
 app.post("/appointments", async (req, res) => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);  // Verify token
-        req.userId = decoded.userId;
-        const { userId } = req;
-    const {  doctorId, date, time, email } = req.body;
+    const token = req.header("Authorization")?.replace("Bearer ", "");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verify token
+    req.userId = decoded.userId;
+    const { userId } = req;
+    const { doctorId, date, time, email } = req.body;
 
     // Validate userId and doctorId
-    if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(doctorId)) {
+    if (
+      !mongoose.Types.ObjectId.isValid(userId) ||
+      !mongoose.Types.ObjectId.isValid(doctorId)
+    ) {
       return res.status(400).send("Invalid user or doctor ID format.");
     }
 
@@ -141,12 +151,13 @@ app.post("/appointments", async (req, res) => {
     await appointment.save();
 
     const appointmentDateTime = new Date(`${date}T${time}`);
-    const reminderTime = new Date(appointmentDateTime.getTime() - 2 * 60 * 60 * 1000);
+    const reminderTime = new Date(
+      appointmentDateTime.getTime() - 2 * 60 * 60 * 1000
+    );
     const delay = reminderTime.getTime() - Date.now();
 
     const sendReminder = async () => {
       try {
-        
         const user = await User.findById(userId);
         const doctor = await Doctor.findById(doctorId);
 
@@ -155,11 +166,14 @@ app.post("/appointments", async (req, res) => {
           return;
         }
 
-        const aiResponse = await axios.post("http://localhost:5000/generate-email", {
-          userName: user.name,
-          doctorName: doctor.name,
-          time,
-        });
+        const aiResponse = await axios.post(
+          "http://localhost:5000/generate-email",
+          {
+            userName: user.name,
+            doctorName: doctor.name,
+            time,
+          }
+        );
 
         const transporter = nodemailer.createTransport({
           service: "gmail",
@@ -185,7 +199,9 @@ app.post("/appointments", async (req, res) => {
     if (delay > 0) {
       setTimeout(sendReminder, delay);
     } else {
-      console.log("⚠️ Reminder time already passed. Sending immediately for testing...");
+      console.log(
+        "⚠️ Reminder time already passed. Sending immediately for testing..."
+      );
       await sendReminder();
     }
 
@@ -217,8 +233,20 @@ app.get("/appointments/:userId", async (req, res) => {
 app.post("/seed-doctors", async (req, res) => {
   try {
     await Doctor.insertMany([
-      { name: "Dr. Asha Mehta", specialization: "Gynecologist", location: "Bangalore", lat: 12.9716, lng: 77.5946 },
-      { name: "Dr. Rajesh Iyer", specialization: "Cardiologist", location: "Chennai", lat: 13.0827, lng: 80.2707 },
+      {
+        name: "Dr. Asha Mehta",
+        specialization: "Gynecologist",
+        location: "Bangalore",
+        lat: 12.9716,
+        lng: 77.5946,
+      },
+      {
+        name: "Dr. Rajesh Iyer",
+        specialization: "Cardiologist",
+        location: "Chennai",
+        lat: 13.0827,
+        lng: 80.2707,
+      },
     ]);
     res.send("✅ Doctors seeded");
   } catch (error) {
@@ -325,43 +353,52 @@ app.post("/analyze", upload.single("file"), async (req, res) => {
   }
 });
 
-app.post('/upload', async (req, res) => {
+app.post("/upload", async (req, res) => {
   const { cid, fileName, aesKey, iv, patientId } = req.body;
   const existing = await File.findOne({ cid });
-  if (existing) return res.status(409).json({ message: 'File already exists' });
-  await File.create({ cid, fileName, aesKey, iv, patientId, allowedDoctors: [] });
-  res.status(201).json({ message: 'Metadata saved' });
+  if (existing) return res.status(409).json({ message: "File already exists" });
+  await File.create({
+    cid,
+    fileName,
+    aesKey,
+    iv,
+    patientId,
+    allowedDoctors: [],
+  });
+  res.status(201).json({ message: "Metadata saved" });
 });
 
-app.post('/share', async (req, res) => {
+app.post("/share", async (req, res) => {
   const { cid, doctorId } = req.body;
   const file = await File.findOne({ cid });
-  if (!file) return res.status(404).json({ message: 'File not found' });
+  if (!file) return res.status(404).json({ message: "File not found" });
   if (!file.allowedDoctors.includes(doctorId)) {
     file.allowedDoctors.push(doctorId);
     await file.save();
   }
-  res.json({ message: 'Doctor added to access list' });
+  res.json({ message: "Doctor added to access list" });
 });
 
-app.get('/file/:cid', async (req, res) => {
+app.get("/file/:cid", async (req, res) => {
   const { cid } = req.params;
   const { doctorId } = req.query;
   const file = await File.findOne({ cid });
-  if (!file) return res.status(404).json({ message: 'Not found' });
-  if (!file.allowedDoctors.includes(doctorId)) return res.status(403).json({ message: 'Access denied' });
+  if (!file) return res.status(404).json({ message: "Not found" });
+  if (!file.allowedDoctors.includes(doctorId))
+    return res.status(403).json({ message: "Access denied" });
   res.json({ fileName: file.fileName, aesKey: file.aesKey, iv: file.iv });
 });
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGO)
-.then(() => {
-    console.log('✅ Connected to MongoDB');
+mongoose
+  .connect(process.env.MONGO)
+  .then(() => {
+    console.log("✅ Connected to MongoDB");
     // Start server after successful database connection
     app.listen(PORT, () => {
-        console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
-})
-.catch((error) => {
-    console.error('❌ MongoDB connection error:', error);
-});
+  })
+  .catch((error) => {
+    console.error("❌ MongoDB connection error:", error);
+  });

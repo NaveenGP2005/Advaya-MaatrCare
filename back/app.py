@@ -2,7 +2,7 @@ import os
 import threading
 import time
 from datetime import datetime
-
+import psutil
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import numpy as np
@@ -34,6 +34,16 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Backend URL for meds
 BACKEND_URL = 'http://localhost:5000/medications'
+
+def get_memory_usage():
+    process = psutil.Process(os.getpid())
+    mem_info = process.memory_info()
+    return mem_info.rss / (1024 * 1024)  # Memory in MB
+
+@app.route("/memory-usage", methods=["GET"])
+def memory_usage():
+    mem_usage = get_memory_usage()
+    return jsonify({"memory_usage_MB": round(mem_usage, 2)})
 
 # === 1. PAIN LEVEL PREDICTION ===
 @app.route("/predict", methods=["POST"])
@@ -127,4 +137,4 @@ def status():
 # === RUN SERVER + SCHEDULER ===
 if __name__ == '__main__':
     threading.Thread(target=run_scheduler).start()
-    app.run(debug=True, port=5001)
+    app.run(host="0.0.0.0", port=8080)
