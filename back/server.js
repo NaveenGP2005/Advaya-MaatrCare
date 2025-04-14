@@ -316,7 +316,7 @@ app.patch("/medications/:id/take", async (req, res) => {
 app.post("/chat", async (req, res) => {
   try {
     const { prompt } = req.body;
-    const response = await axios.post("http://127.0.0.1:5000/chat", { prompt });
+    const response = await axios.post("http://127.0.0.1:8080/chat", { prompt });
     res.json(response.data);
   } catch (error) {
     console.error("Error:", error.message);
